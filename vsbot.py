@@ -21,15 +21,16 @@ from datetime import datetime
 import sqlite3
 import os
 
-
 # settings abc
 TOKEN = "1362537016:AAHjHjM7oUYeiZGvKZb25IhjeorYY3lElHI"
 TIME_END_RECORDS = '18:00:00'
 
-SHIFT_INTERVALS = {'#1': 'Смена1',
-                   '#2': 'Смена2',
-                   '#3': 'Смена3'
+SHIFT_INTERVALS = {'#1': '🌟 11:00',
+                   '#2': '🌟 14:00',
+                   '#3': '🌟 19:00'
                    }
+SHIFTMAX = 2
+ADMIN_ID = ''
 
 # db settings class SqliteDb
 DB_NAME = 'telegram.db'
@@ -51,12 +52,10 @@ class SqliteDb(object):
 
 
     def get(self, user_id, shift, table_name=DEFAULT_TABLE_NAME):
-        """ Получаем данные о конкретной записи """
+        """ Проверяем есть ли запись  """
         with self.connection:
             try:
                 value = self.cursor.execute('SELECT * FROM {} WHERE user_id = "{}" AND shift = "{}"'.format(table_name, user_id, shift)).fetchall()
-                print(value)
-                print(type(value))
                 if len(value) == 0:
                     return False
                 else:
@@ -122,7 +121,7 @@ class SqliteDb(object):
         Записавшиеся на определенную смену
         :param shift:
         :param table_name:
-        :return: число записавшихся на смену
+        :return:записавшиеся на смену
         """
         with self.connection:
             try:
@@ -141,25 +140,31 @@ initdb.create_table()
 initdb.close()
 
 def create_mainkeyboard(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2)
+    markup = types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True)
     itembtn1 = types.KeyboardButton(text='*записаться')
     itembtn2 = types.KeyboardButton(text='*посмотреть_записи')
     markup.row(itembtn1)
     markup.row(itembtn2)
     bot.send_message(message.chat.id,
-                     text='Hi, {}({})'.format(message.from_user.id, message.from_user.first_name),
+                     text='Дамы и господа, я бот для записи на смену.',
                      reply_markup=markup)
 
 def create_inlinekeyboarb(message):
+    db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
-    itembtn1 = types.InlineKeyboardButton(text='#смена1', callback_data='#1')
-    itembtn2 = types.InlineKeyboardButton(text='#смена2', callback_data='#2')
-    itembtn3 = types.InlineKeyboardButton(text='#смена3', callback_data='#3')
-    inlinekeyboarb.row(itembtn1)
-    inlinekeyboarb.row(itembtn2)
-    inlinekeyboarb.row(itembtn3)
+    for shift in SHIFT_INTERVALS:
+        text = SHIFT_INTERVALS[shift]
+
+        if len(db.count_rows(shift=shift)) == SHIFTMAX:
+            text = SHIFT_INTERVALS[shift] + " ❌ Запись закрыта"
+
+        #itembtn0 = types.InlineKeyboardButton(text='*', callback_data=shift+'show')
+        itembtn1 = types.InlineKeyboardButton(text=text, callback_data=shift)
+        inlinekeyboarb.row(itembtn0, itembtn1)
+    db.close()
+
     bot.send_message(message.chat.id,
-                     text='{}(id{}), выберите смену'.format(message.from_user.first_name, message.from_user.id),
+                     text='{}, выберите время'.format(message.from_user.first_name),
                      reply_markup=inlinekeyboarb)
 
 
@@ -168,55 +173,52 @@ def delete_or_insert(call):
     :param call: принимает данные из инлайн-клавиатуры
     :return: answer_callback_query  Делает запрос в БД и показавает всплывающее окно об удаление или добавлении записи
     """
-    print('{}({})'.format(call.from_user.id, call.from_user.first_name))
     db = SqliteDb()
     value = db.get(user_id=call.from_user.id, shift=call.data)
-
-    print(value)
     if value == True:
-
         db.delete(user_id=call.from_user.id, shift=call.data)
         db.close()
         bot.answer_callback_query(callback_query_id=call.id,
                                   show_alert=True,
-                                  text="Запись на смену {} удалена".format(call.data))
+                                  text="Запись на смену {} удалена".format(SHIFT_INTERVALS[call.data]))
     else:
-        status = db.insert(shift=call.data, user_id=call.from_user.id, user_name=call.from_user.first_name,
-                           date=datetime.now())
-        db.close()
-        bot.answer_callback_query(callback_query_id=call.id,
-                                  show_alert=True,
-                                  text="{},Вы записаны в смену {}! ({})".format(call.from_user.first_name,
-                                                                                call.data, datetime.now()))
+        if len(db.count_rows(shift=call.data)) == SHIFTMAX:
+            db.close()
+
+            bot.answer_callback_query(callback_query_id=call.id,
+                                      show_alert=True,
+                                      text="{}, записаться уже нельзя. Выберите другую смену!".format(call.from_user.first_name))
+        else:
+            status = db.insert(shift=call.data, user_id=call.from_user.id, user_name=call.from_user.first_name,
+                               date=datetime.now())
+            db.close()
+
+            bot.answer_callback_query(callback_query_id=call.id,
+                                      show_alert=True,
+                                      text="{}, Вы записаны на {}. Нажмите еще раз если хотите отписаться".format(call.from_user.first_name,
+                                                                                    SHIFT_INTERVALS[call.data]))
 
 @bot.message_handler(func=lambda m: True)
 def process_main(message):
 
     if message.text == '*записаться':
         create_inlinekeyboarb(message)
-
     elif message.text == '*посмотреть_записи':
-
         db = SqliteDb()
 
         for shift in SHIFT_INTERVALS:
             count_rows = db.count_rows(shift=shift)
             bot.send_message(message.chat.id,
-                             text='Записалось на смену {}:__{}__'.format(shift, len(count_rows)))
+                             text='Записались на {} - {} человек.'.format(SHIFT_INTERVALS[shift], len(count_rows)))
 
-            text = ''
             for row in count_rows:
-                print(dict(row))
                 row = dict(row)
-                text ="Время записи: {} , Имя записавшегося: {}  (id{}) \n".format(row['date'],
-                                                                                   row['user_name'],
-                                                                                   row['user_id'])
+                text ="<a href='tg://user?id={}'>{}</a>  <i>({})</i> ".format(row['user_id'], row['user_name'], row['date'])
 
-                bot.send_message(message.chat.id, text=text)
+                bot.send_message(message.chat.id, text=text, parse_mode='HTML')
         db.close()
 
     elif message.text == '/start':
-        bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAJI016ZBLm7lwv59UM4LRtKr2-HRX0pAAKeagACY4tGDAH-qNHAWrFaGAQ')
         create_mainkeyboard(message)
 
     else:

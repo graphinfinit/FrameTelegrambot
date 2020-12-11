@@ -1,6 +1,7 @@
-'''
-/////////
-'''
+"""
+@framebot (телеграм бот для записи людей на определенное время)
+
+"""
 
 import telebot
 from telebot import types
@@ -10,16 +11,7 @@ from datetime import datetime
 import sqlite3
 import os
 
-# settings abc
-TOKEN = "///"
-TIME_END_RECORDS = '18:00:00'
-
-SHIFT_INTERVALS = {'#1': '🌟 11:00',
-                   '#2': '🌟 14:00',
-                   '#3': '🌟 19:00'
-                   }
-SHIFTMAX = 2
-ADMIN_ID = ''
+from settings import TOKEN, ADMIN_LIST, SHIFTMAX, TIME_END_RECORDS, SHIFT_INTERVALS
 
 # db settings class SqliteDb
 DB_NAME = 'telegram.db'
@@ -30,15 +22,13 @@ DB_PATH = os.path.join(dirname, 'database', '{}'.format(DB_NAME))
 
 
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, threaded=False)  # отключена многопоточность библиотеки threaded=False
 print('Start program...{}'.format(datetime.now()))
-
 class SqliteDb(object):
     def __init__(self, db_path=DB_PATH):
         self.connection = sqlite3.connect(db_path)
         self.connection.row_factory = sqlite3.Row  #позволяет выводить в виде sqlite3.Row object а не кортежей
         self.cursor = self.connection.cursor()
-
 
     def get(self, user_id, shift, table_name=DEFAULT_TABLE_NAME):
         """ Проверяем есть ли запись  """
@@ -53,7 +43,7 @@ class SqliteDb(object):
                 print(exc.args)
 
     def select_all(self, table_name=DEFAULT_TABLE_NAME):
-        """ Получаем все данные """
+        """ Получаем все данные из таблицы записавшихся"""
         with self.connection:
             try:
                 return self.cursor.execute('SELECT * FROM {}'.format(table_name)).fetchall()
@@ -118,6 +108,17 @@ class SqliteDb(object):
                 return result
             except Exception as exc:
                 print(exc.args)
+    def drop_table(self):
+        """
+        Удаление таблицы
+        :return:
+        """
+        with self.connection:
+            try:
+                self.cursor.execute('DROP TABLE {}'.format(DEFAULT_TABLE_NAME))
+            except Exception as exc:
+                print(exc.args)
+
 
     def close(self):
         """ Закрываем текущее соединение с БД """
@@ -135,7 +136,7 @@ def create_mainkeyboard(message):
     markup.row(itembtn1)
     markup.row(itembtn2)
     bot.send_message(message.chat.id,
-                     text='Дамы и господа, я бот для записи на смену.',
+                     text='Дамы и господа, я бот для записи',
                      reply_markup=markup)
 
 def create_inlinekeyboarb(message):
@@ -146,16 +147,12 @@ def create_inlinekeyboarb(message):
 
         if len(db.count_rows(shift=shift)) == SHIFTMAX:
             text = SHIFT_INTERVALS[shift] + " ❌ Запись закрыта"
-
-        #itembtn0 = types.InlineKeyboardButton(text='*', callback_data=shift+'show')
         itembtn1 = types.InlineKeyboardButton(text=text, callback_data=shift)
-        inlinekeyboarb.row(itembtn0, itembtn1)
+        inlinekeyboarb.row(itembtn1)
     db.close()
-
     bot.send_message(message.chat.id,
                      text='{}, выберите время'.format(message.from_user.first_name),
                      reply_markup=inlinekeyboarb)
-
 
 def delete_or_insert(call):
     """
@@ -173,7 +170,6 @@ def delete_or_insert(call):
     else:
         if len(db.count_rows(shift=call.data)) == SHIFTMAX:
             db.close()
-
             bot.answer_callback_query(callback_query_id=call.id,
                                       show_alert=True,
                                       text="{}, записаться уже нельзя. Выберите другую смену!".format(call.from_user.first_name))
@@ -181,7 +177,6 @@ def delete_or_insert(call):
             status = db.insert(shift=call.data, user_id=call.from_user.id, user_name=call.from_user.first_name,
                                date=datetime.now())
             db.close()
-
             bot.answer_callback_query(callback_query_id=call.id,
                                       show_alert=True,
                                       text="{}, Вы записаны на {}. Нажмите еще раз если хотите отписаться".format(call.from_user.first_name,
@@ -189,12 +184,10 @@ def delete_or_insert(call):
 
 @bot.message_handler(func=lambda m: True)
 def process_main(message):
-
     if message.text == '*записаться':
         create_inlinekeyboarb(message)
     elif message.text == '*посмотреть_записи':
         db = SqliteDb()
-
         for shift in SHIFT_INTERVALS:
             count_rows = db.count_rows(shift=shift)
             bot.send_message(message.chat.id,
@@ -206,9 +199,18 @@ def process_main(message):
 
                 bot.send_message(message.chat.id, text=text, parse_mode='HTML')
         db.close()
-
     elif message.text == '/start':
         create_mainkeyboard(message)
+    elif message.text == '/drop_db':
+        if str(message.from_user.id) in ADMIN_LIST:
+            db = SqliteDb()
+            db.drop_table()
+            db.create_table()
+            db.close()
+            bot.send_message(message.chat.id, text="<strong>!{}, все записи успешно удалены!</strong>".format(
+                message.from_user.first_name), parse_mode='HTML')
+        else:
+            bot.send_message(message.chat.id, text="<strong>!{}, я слушаюсь только хозяина.</strong>".format(message.from_user.first_name), parse_mode='HTML')
 
     else:
         pass
@@ -216,96 +218,17 @@ def process_main(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def process_call(call):
-    if call.data == '#1':
-        delete_or_insert(call)
-
-    elif call.data == '#2':
-        delete_or_insert(call)
-
-    elif call.data == '#3':
-        delete_or_insert(call)
+    for key_of_shift in SHIFT_INTERVALS:
+        if call.data == key_of_shift:
+            delete_or_insert(call)
+            msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=".",
+                                        parse_mode='Markdown')
+            create_inlinekeyboarb(msg)
 
 if __name__ == '__main__':
     while True:
         try:
-            bot.polling(none_stop=True)
+            bot.infinity_polling(True)
         except Exception as problem:
             print(problem.args)
-            time.sleep(7)
-
-
-
-            '''
-               
-getUserProfilePhotos
-            {
-    'content_type':'text',
-    'message_id':573,
-    'from_user':{
-        'id':687595402,
-        'is_bot':False,
-        'first_name':'Dmitry',
-        'username':'dimagorovtsov',
-        'last_name':'Gorovtsov',
-        'language_code':'ru'
-    },
-    'date':1565206363,
-    'chat':{
-        'type':'private',
-        'last_name':'Gorovtsov',
-        'first_name':'Dmitry',
-        'username':'dimagorovtsov',
-        'id':687595402,
-        'title':None,
-        'all_members_are_administrators':None,
-        'photo':None,
-        'description':None,
-        'invite_link':None,
-        'pinned_message':None,
-        'sticker_set_name':None,
-        'can_set_sticker_set':None
-    },
-    'forward_from_chat':None,
-    'forward_from':None,
-    'forward_date':None,
-    'reply_to_message':None,
-    'edit_date':None,
-    'media_group_id':None,
-    'author_signature':None,
-    'text':'/start',
-    'entities':[
-        <telebot.types.MessageEntity object at 0x03807F50>
-    ],
-    'json':{
-        'message_id':573,
-        'from':{
-            'id':687595402,
-            'is_bot':False,
-            'first_name':'Dmitry',
-            'last_name':'Gorovtsov',
-            'username':'dimagorovtsov',
-            'language_code':'ru'
-        },
-        'chat':{
-            'id':687595402,
-            'first_name':'Dmitry',
-            'last_name':'Gorovtsov',
-            'username':'dimagorovtsov',
-            'type':'private'
-        },
-        'date':1565206363,
-        'text':'/start',
-        'entities':[
-            {
-                'offset':0,
-                'length':6,
-                'type':'bot_command'
-            }
-        ]
-    }
-}
-            
-            
-            
-            
-            '''
+            time.sleep(20)

@@ -82,8 +82,7 @@ def create_inlinekeyboarb(message):
         inlinekeyboarb.row(itembtnlook, itembtn1)
     db.close()
     bot.send_message(message.chat.id,
-                     text="""Запись на завтра открыта 🥁🥁 
-                     Выбираем время ➡️""",
+                     text="""Запись на завтра открыта 🥁🥁 Выбираем время ➡️""",
                      reply_markup=inlinekeyboarb)
 
 def delete_or_insert(call):

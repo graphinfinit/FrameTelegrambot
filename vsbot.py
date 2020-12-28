@@ -165,7 +165,7 @@ def process_main(message):
             db.drop_table()
             db.create_table()
             db.close()
-            bot.send_message(message.chat.id, text="<strong>!{}, все записи успешно удалены!</strong>".format(
+            bot.send_message(message.chat.id, text="<strong>.</strong>".format(
                 message.from_user.first_name), parse_mode='HTML')
             create_inlinekeyboarb(message)
         else:

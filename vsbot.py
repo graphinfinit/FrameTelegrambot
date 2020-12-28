@@ -227,8 +227,7 @@ def process_call(call):
     for key_of_shift in SHIFT_INTERVALS:
         if call.data == key_of_shift:
             delete_or_insert(call)
-            msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=".",
-                                        parse_mode='Markdown')
+            msg = bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
             create_inlinekeyboarb(msg)
         if call.data == key_of_shift + '_look':
             db = SqliteDb()

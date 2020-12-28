@@ -228,8 +228,7 @@ def process_call(call):
         if call.data == key_of_shift:
             delete_or_insert(call)
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-            msg = bot.send_message(chat_id=call.message.chat.id, text=".")
-            create_inlinekeyboarb(msg)
+            create_inlinekeyboarb(call)
         if call.data == key_of_shift + '_look':
             db = SqliteDb()
             count_rows = db.count_rows(shift=key_of_shift)

@@ -21,7 +21,7 @@ DB_PATH = os.path.join(dirname, 'database', '{}'.format(DB_NAME))
 class SqliteDb(object):
 
     def __init__(self, db_path=DATABASE_URL):
-        self.connection = psycopg2.connect(DATABASE_URL)
+        self.connection = psycopg2.connect(db_path)
         self.cursor = self.connection.cursor()
 
     # adminpart

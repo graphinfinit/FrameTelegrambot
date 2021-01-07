@@ -35,7 +35,8 @@ class SqliteDb(object):
         with self.connection:
             try:
                 self.cursor.execute('SELECT * FROM {}'.format(table_name))
-                return self.cursor.fetchall()
+                q = self.cursor.fetchall()
+                return q
             except Exception as exc:
                 print(exc.args)
 
@@ -65,7 +66,8 @@ class SqliteDb(object):
         with self.connection:
             try:
                 self.cursor.execute('SELECT * FROM {}'.format(table_name))
-                return self.cursor.fetchall()
+                q = self.cursor.fetchall()
+                return q
             except Exception as exc:
                 print(exc.args)
     def drop_max(self, table_name=DEFAULT_LIMIT_TABLE):
@@ -102,7 +104,8 @@ class SqliteDb(object):
         with self.connection:
             try:
                 self.cursor.execute('SELECT * FROM {}'.format(table_name))
-                return self.cursor.fetchall()
+                q = self.cursor.fetchall()
+                return q
             except Exception as exc:
                 print(exc.args)
 
@@ -161,7 +164,8 @@ class SqliteDb(object):
         with self.connection:
             try:
                 self.cursor.execute('SELECT * FROM {} WHERE shift = "{}"'.format(table_name, shift))
-                return self.cursor.fetchall()
+                q = self.cursor.fetchall()
+                return q
             except Exception as exc:
                 print(exc.args)
     def drop_table(self):

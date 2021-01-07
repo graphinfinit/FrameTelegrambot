@@ -23,6 +23,9 @@ initdb.create_limittable()
 initdb.close()
 
 
+print('Таблицы созданы...')
+
+
 
 def is_allowed(string):
     characherRegex = re.compile(r'[^a-zA-Z0-9.:\s]')

@@ -6,17 +6,11 @@ import psycopg2
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
-
-
 # db settings class SqliteDb
-DB_NAME = 'telegram.db'
 DEFAULT_TABLE_NAME = 'shift_good'
 DEFAULT_CONFIG_TABLE = 'config'
 DEFAULT_STATE_TABLE = 'states'
 DEFAULT_LIMIT_TABLE = 'limittable'
-
-dirname = os.path.dirname(__file__)
-DB_PATH = os.path.join(dirname, 'database', '{}'.format(DB_NAME))
 
 class SqliteDb(object):
 
@@ -40,7 +34,8 @@ class SqliteDb(object):
     def get_configs(self, table_name=DEFAULT_CONFIG_TABLE):
         with self.connection:
             try:
-                return self.cursor.execute('SELECT * FROM {}'.format(table_name)).fetchall()
+                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                return self.cursor.fetchall()
             except Exception as exc:
                 print(exc.args)
 
@@ -69,7 +64,8 @@ class SqliteDb(object):
     def get_max(self, table_name=DEFAULT_LIMIT_TABLE):
         with self.connection:
             try:
-                return self.cursor.execute('SELECT * FROM {}'.format(table_name)).fetchall()
+                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                return self.cursor.fetchall()
             except Exception as exc:
                 print(exc.args)
     def drop_max(self, table_name=DEFAULT_LIMIT_TABLE):
@@ -92,7 +88,8 @@ class SqliteDb(object):
         """ Проверяем есть ли запись  """
         with self.connection:
             try:
-                value = self.cursor.execute('SELECT * FROM {} WHERE user_id = "{}" AND shift = "{}"'.format(table_name, user_id, shift)).fetchall()
+                self.cursor.execute('SELECT * FROM {} WHERE user_id = "{}" AND shift = "{}"'.format(table_name, user_id, shift))
+                value = self.cursor.fetchall()
                 if len(value) == 0:
                     return False
                 else:
@@ -104,7 +101,8 @@ class SqliteDb(object):
         """ Получаем все данные из таблицы записавшихся"""
         with self.connection:
             try:
-                return self.cursor.execute('SELECT * FROM {}'.format(table_name)).fetchall()
+                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                return self.cursor.fetchall()
             except Exception as exc:
                 print(exc.args)
 
@@ -162,8 +160,8 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                result = self.cursor.execute('SELECT * FROM {} WHERE shift = "{}"'.format(table_name, shift)).fetchall()
-                return result
+                self.cursor.execute('SELECT * FROM {} WHERE shift = "{}"'.format(table_name, shift))
+                return self.cursor.fetchall()
             except Exception as exc:
                 print(exc.args)
     def drop_table(self):

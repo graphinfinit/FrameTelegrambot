@@ -1,6 +1,12 @@
 
 import os
-import sqlite3
+
+
+import psycopg2
+
+DATABASE_URL = os.environ['DATABASE_URL']
+
+
 
 # db settings class SqliteDb
 DB_NAME = 'telegram.db'
@@ -14,9 +20,8 @@ DB_PATH = os.path.join(dirname, 'database', '{}'.format(DB_NAME))
 
 class SqliteDb(object):
 
-    def __init__(self, db_path=DB_PATH):
-        self.connection = sqlite3.connect(db_path)
-        self.connection.row_factory = sqlite3.Row  #позволяет выводить в виде sqlite3.Row object
+    def __init__(self, db_path=DATABASE_URL):
+        self.connection = psycopg2.connect(DATABASE_URL)
         self.cursor = self.connection.cursor()
 
     # adminpart
@@ -175,30 +180,3 @@ class SqliteDb(object):
         """ Закрываем текущее соединение с БД """
         self.connection.close()
 
-"""
-    #statepart
-    def create_state_table(self, table_name= DEFAULT_STATE_TABLE):
-        with self.connection:
-            try:
-                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, state INTEGER)'.format(table_name))
-                return True
-            except Exception as exc:
-                print(exc.args)
-
-    def get_state(self):
-        with self.connection:
-            try:
-                self.cursor.execute('SELECT state FROM {} WHERE id = 1'.format(table_name))
-                return True
-            except Exception as exc:
-                print(exc.args)
-
-    def set_state(self, state):
-        with self.connection:
-            try:
-                self.cursor.execute('UPDATE {} SET state = {} WHERE id = 1'.format(table_name, state))
-                return True
-            except Exception as exc:
-                print(exc.args)
-
-"""

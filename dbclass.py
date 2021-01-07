@@ -32,7 +32,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, shift TEXT)'.format(table_name))
+                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, shift TEXT)'.format(table_name))
                 return True
             except Exception as exc:
                 print(exc.args)
@@ -81,7 +81,7 @@ class SqliteDb(object):
     def create_limittable(self, table_name=DEFAULT_LIMIT_TABLE):
         with self.connection:
             try:
-                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, vlimit TEXT)".format(table_name))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, vlimit TEXT)".format(table_name))
             except Exception as exc:
                 print(exc.args)
 
@@ -117,7 +117,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, shift TEXT, user_id TEXT, user_name TEXT)'.format(table_name))
+                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY , date TEXT, shift TEXT, user_id TEXT, user_name TEXT)'.format(table_name))
                 return True
             except Exception as exc:
                 print(exc.args)

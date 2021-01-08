@@ -75,7 +75,10 @@ def create_inlinekeyboarb(message):
 
     for shift in SHIFT_INTERVALS:
         text = SHIFT_INTERVALS[shift]
-        us = len(db.count_rows(shift=shift))
+        try:
+            us = len(db.count_rows(shift=shift))
+        except Excepion as asf:
+            print(asf)
         if us == SHIFTMAX:
             text = SHIFT_INTERVALS[shift] + " ❌ Запись закрыта"
 

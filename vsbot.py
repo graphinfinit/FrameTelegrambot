@@ -41,6 +41,7 @@ def get_shift_intervals(goodsymbol=GoodSymbol, default_value=SHIFT_INTERVALS):
 
         SHIFT_INTERVALS = {}
         for row in rows:
+            print(row)
             q = dict(row)
             SHIFT_INTERVALS[str(q['id'])] = goodsymbol + q['shift']
         if bool(SHIFT_INTERVALS):

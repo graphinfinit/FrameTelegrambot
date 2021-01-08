@@ -16,7 +16,7 @@ class SqliteDb(object):
 
     def __init__(self, db_path=DATABASE_URL):
         self.connection = psycopg2.connect(db_path)
-        self.cursor = self.connection.cursor()
+        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     # adminpart
     def create_config_table(self, table_name=DEFAULT_CONFIG_TABLE):

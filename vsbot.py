@@ -75,6 +75,7 @@ def create_inlinekeyboarb(message):
 
     for shift in SHIFT_INTERVALS:
         text = SHIFT_INTERVALS[shift]
+        print('problems ///')
         try:
             us = len(db.count_rows(shift=shift))
         except Excepion as asf:

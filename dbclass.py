@@ -26,7 +26,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, shift TEXT)'.format(table_name))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, shift TEXT)".format(table_name))
                 return True
             except Exception as exc:
                 print(exc.args)
@@ -34,7 +34,7 @@ class SqliteDb(object):
     def get_configs(self, table_name=DEFAULT_CONFIG_TABLE):
         with self.connection:
             try:
-                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                self.cursor.execute("SELECT * FROM {}".format(table_name))
                 q = self.cursor.fetchall()
                 return q
             except Exception as exc:
@@ -43,7 +43,7 @@ class SqliteDb(object):
     def insert_config(self, shift, table_name=DEFAULT_CONFIG_TABLE):
         with self.connection:
             try:
-                self.cursor.execute('INSERT INTO {} (shift) VALUES ("{}") '.format(table_name, shift))
+                self.cursor.execute("INSERT INTO {} (shift) VALUES ('{}') ".format(table_name, shift))
             except Exception as exc:
                 print(exc.args)
     def drop_config(self, table_name=DEFAULT_CONFIG_TABLE):
@@ -65,7 +65,7 @@ class SqliteDb(object):
     def get_max(self, table_name=DEFAULT_LIMIT_TABLE):
         with self.connection:
             try:
-                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                self.cursor.execute("SELECT * FROM {}".format(table_name))
                 q = self.cursor.fetchall()
                 return q
             except Exception as exc:
@@ -90,7 +90,7 @@ class SqliteDb(object):
         """ Проверяем есть ли запись  """
         with self.connection:
             try:
-                self.cursor.execute('SELECT * FROM {} WHERE user_id = "{}" AND shift = "{}"'.format(table_name, user_id, shift))
+                self.cursor.execute("SELECT * FROM {} WHERE user_id = '{}' AND shift = '{}'".format(table_name, user_id, shift))
                 value = self.cursor.fetchall()
                 if len(value) == 0:
                     return False
@@ -103,7 +103,7 @@ class SqliteDb(object):
         """ Получаем все данные из таблицы записавшихся"""
         with self.connection:
             try:
-                self.cursor.execute('SELECT * FROM {}'.format(table_name))
+                self.cursor.execute("SELECT * FROM {}".format(table_name))
                 q = self.cursor.fetchall()
                 return q
             except Exception as exc:
@@ -134,7 +134,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('INSERT INTO {} (date, shift, user_id, user_name) VALUES ("{}", "{}", "{}", "{}") '.format(table_name, date, shift, user_id, user_name))
+                self.cursor.execute("INSERT INTO {} (date, shift, user_id, user_name) VALUES ('{}', '{}', '{}', '{}') ".format(table_name, date, shift, user_id, user_name))
                 return True
             except Exception as exc:
                 print(exc.args)
@@ -149,7 +149,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('DELETE FROM {} WHERE shift = "{}" AND user_id = "{}"'.format(table_name, shift, user_id))
+                self.cursor.execute("DELETE FROM {} WHERE shift = '{}' AND user_id = '{}'".format(table_name, shift, user_id))
                 return True
             except Exception as exc:
                 print(exc.args)
@@ -163,7 +163,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('SELECT * FROM {} WHERE shift = "{}"'.format(table_name, shift))
+                self.cursor.execute("SELECT * FROM {} WHERE shift = '{}'".format(table_name, shift))
                 q = self.cursor.fetchall()
                 return q
             except Exception as exc:
@@ -174,7 +174,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('DROP TABLE {}'.format(DEFAULT_TABLE_NAME))
+                self.cursor.execute("DROP TABLE {}".format(DEFAULT_TABLE_NAME))
             except Exception as exc:
                 print(exc.args)
 

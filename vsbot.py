@@ -43,6 +43,7 @@ def get_shift_intervals(goodsymbol=GoodSymbol, default_value=SHIFT_INTERVALS):
         for row in rows:
             print(row)
             q = dict(row)
+            print(q)
             SHIFT_INTERVALS[str(q['id'])] = goodsymbol + q['shift']
         if bool(SHIFT_INTERVALS):
             return SHIFT_INTERVALS
@@ -58,14 +59,17 @@ def get_shiftmax(default_value=SHIFTMAX):
         dt = connect.get_max()
         connect.close()
         dt = dict(dt)
-        if dt:
-            if dt[1].isdigit():
-                return int(dt[1])
-        else:
-            return default_value
-
+        print('dt')
+        print(dt)
     except Exception as exc:
         print(exc.args)
+    if dt:
+        if dt[1].isdigit():
+            return int(dt[1])
+    else:
+        return default_value
+
+
 
 
 def create_inlinekeyboarb(message):
@@ -74,9 +78,11 @@ def create_inlinekeyboarb(message):
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
 
+
     for shift in SHIFT_INTERVALS:
         text = SHIFT_INTERVALS[shift]
-        print('problems ///')
+        print('SHIFTMAX')
+        print(SHIFTMAX)
         us = len(db.count_rows(shift=shift))
         if us == SHIFTMAX:
             text = SHIFT_INTERVALS[shift] + " ❌ Запись закрыта"

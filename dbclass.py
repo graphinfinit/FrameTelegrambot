@@ -3,6 +3,7 @@ import os
 
 
 import psycopg2
+import psycopg2.extras
 
 DATABASE_URL = os.environ['DATABASE_URL']
 

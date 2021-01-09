@@ -23,7 +23,7 @@ initdb.create_limittable()
 initdb.close()
 
 
-print('Таблицы созданы...')
+print('Ok...')
 
 
 
@@ -41,9 +41,7 @@ def get_shift_intervals(goodsymbol=GoodSymbol, default_value=SHIFT_INTERVALS):
 
         SHIFT_INTERVALS = {}
         for row in rows:
-            print(row)
             q = dict(row)
-            print(q)
             SHIFT_INTERVALS[str(q['id'])] = goodsymbol + q['shift']
         if bool(SHIFT_INTERVALS):
             return SHIFT_INTERVALS
@@ -58,10 +56,7 @@ def get_shiftmax(default_value=SHIFTMAX):
         connect = SqliteDb()
         dt = connect.get_max()
         connect.close()
-        print('dt')
-        print(dt)
         dt = dict(dt[0])
-        print(dt['vlimit'])
     except Exception as exc:
         print(exc.args)
     if dt:
@@ -82,8 +77,6 @@ def create_inlinekeyboarb(message):
 
     for shift in SHIFT_INTERVALS:
         text = SHIFT_INTERVALS[shift]
-        print('SHIFTMAX')
-        print(SHIFTMAX)
         us = len(db.count_rows(shift=shift))
         if us == SHIFTMAX:
             text = SHIFT_INTERVALS[shift] + " ❌ Запись закрыта"

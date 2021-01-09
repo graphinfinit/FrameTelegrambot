@@ -60,6 +60,8 @@ def get_shiftmax(default_value=SHIFTMAX):
         connect.close()
         print('dt')
         print(dt)
+        dt = dict(dt)
+        print(dt['vlimit'])
     except Exception as exc:
         print(exc.args)
     if dt:

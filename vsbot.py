@@ -58,7 +58,6 @@ def get_shiftmax(default_value=SHIFTMAX):
         connect = SqliteDb()
         dt = connect.get_max()
         connect.close()
-        dt = dict(dt)
         print('dt')
         print(dt)
     except Exception as exc:

@@ -293,14 +293,14 @@ def process_call(call):
     lim = get_time()
     timeend = lim[1]
     timenow = datetime.now()
-    diff = timeend - timenow
-    print(diff)
-    print(diff.total_seconds())
+
 
 
     for key_of_shift in SHIFT_INTERVALS:
         if call.data == key_of_shift:
-            if int(diff.total_seconds()) > 0:
+            if timeend > timenow:
+                print(timeend)
+                print(timenow)
                 delete_or_insert(call)
                 bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
                 create_inlinekeyboarb(call.message)

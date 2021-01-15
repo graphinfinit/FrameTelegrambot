@@ -83,7 +83,7 @@ def get_time():
     try:
 
         timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f') + timedelta(hours=3)
-        timeend = timestart + timedelta(hours=int(timelimit))
+        timeend = timestart + timedelta(minutes=int(timelimit))
     except Exception as exc:
         print(exc.args)
 
@@ -175,13 +175,13 @@ def process_main(message):
           /start - вывести окно записи
           /look - посмотреть всех записавшихся 
         Функционал доступный только администратору:
-          /push - удалить всех записавшихся, отобразить новое пустое окно записи
-          /config - редактировать окно записи:
+          /push - удалить всех записавшихся, отобразить новое пустое окно записи, обнулить время начала записи.
+          /config - редактировать окно записи(после config перечислите названия смен через пробел):
         Для отложенного запуска окна записи:
            -наберите команды и удерживайте кнопку _отправить_ > в мобильной версии
            или правой кнопкой мыши в десктопе
-          /max - максимальное количество записей
-          /timelimit - установить время действие окна записи.По умолчанию 4 часа 
+          /max - максимальное количество записей на одну смену
+          /timelimit - установить время действие окна записи в минутах.По умолчанию 240минут(4 часа)
            
            @graphinfinit
            
@@ -294,6 +294,8 @@ def process_call(call):
     timeend = lim[1]
     timenow = datetime.now()
     diff = timeend - timenow
+    print(diff)
+    print(diff.total_seconds())
 
 
     for key_of_shift in SHIFT_INTERVALS:

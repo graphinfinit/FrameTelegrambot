@@ -15,7 +15,9 @@ DEFAULT_STATE_TABLE = 'states'
 DEFAULT_LIMIT_TABLE = 'limittable'
 DEFAULT_TIMELIMIT_TABLE = 'timetable'
 
-TIME_LIMIT = 4
+
+# время действия окна записи в минутах по умолчанию
+TIME_LIMIT = 240
 
 class SqliteDb(object):
 

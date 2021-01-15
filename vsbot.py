@@ -124,7 +124,7 @@ def create_inlinekeyboarb(message):
         inlinekeyboarb.row(itembtnlook, itembtn1)
     db.close()
     bot.send_message(message.chat.id,
-                     text="Запись на завтра открыта 🥁🥁 Выбираем время ➡.Успейте с {} по {}️".format(str(limlist[0]),str(limlist[1])),
+                     text="Запись на завтра открыта 🥁🥁 Выбираем время ➡.Успейте записаться с {} по {}️ по Мск".format(str(limlist[0]),str(limlist[1])),
                      reply_markup=inlinekeyboarb)
 
 def delete_or_insert(call):
@@ -290,11 +290,24 @@ def process_main(message):
 @bot.callback_query_handler(func=lambda call: True)
 def process_call(call):
     SHIFT_INTERVALS = get_shift_intervals()
+    lim = get_time()
+    timeend = lim[1]
+    timenow = datetime.now()
+    diff = timeend - timenow
+
+
     for key_of_shift in SHIFT_INTERVALS:
         if call.data == key_of_shift:
-            delete_or_insert(call)
-            bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-            create_inlinekeyboarb(call.message)
+            if int(diff.total_seconds()) > 0:
+                delete_or_insert(call)
+                bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+                create_inlinekeyboarb(call.message)
+            else:
+                bot.answer_callback_query(callback_query_id=call.id,
+                                          show_alert=True,
+                                          text='К сожалению время записи истекло. Попробуйте в другой раз')
+
+
         if call.data == key_of_shift + '_look':
             db = SqliteDb()
             count_rows = db.count_rows(shift=key_of_shift)

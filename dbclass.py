@@ -2,6 +2,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+from datetime import datetime
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
@@ -10,6 +11,7 @@ DEFAULT_TABLE_NAME = 'shift_good'
 DEFAULT_CONFIG_TABLE = 'config'
 DEFAULT_STATE_TABLE = 'states'
 DEFAULT_LIMIT_TABLE = 'limittable'
+DEFAULT_TIMELIMIT_TABLE = 'timetable'
 
 class SqliteDb(object):
 
@@ -81,6 +83,50 @@ class SqliteDb(object):
                 self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, vlimit TEXT)".format(table_name))
             except Exception as exc:
                 print(exc.args)
+
+    #time part содержит время создания окна записи и время действия (лимит времени)
+    def create_timetable(self, table_name=DEFAULT_TIMELIMIT_TABLE, timestart = datetime.now(), timelimit=TIME_LIMIT):
+        """
+        :param table_name:
+        :return:
+        """
+        with self.connection:
+            try:
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, timestart TIMESTAMP, timelimit INTEGER)".format(table_name))
+                self.cursor.execute( "INSERT INTO {} (timestart, timelimit) VALUES ({},{})".format(table_name, timestart, timelimit))
+            except Exception as exc:
+                print(exc.args)
+    def update_timelimit(self, table_name=DEFAULT_TIMELIMIT_TABLE, timelimit = TIME_LIMIT):
+        with self.connection:
+            try:
+                self.cursor.execute("UPDATE {} SET timelimit={} WHERE id = 1".format(table_name, timelimit))
+            except Exception as exc:
+                print(exc.args)
+    def update_timestart(self, table_name=DEFAULT_TIMELIMIT_TABLE, timestart = datetime.now()):
+        with self.connection:
+            try:
+                self.cursor.execute("UPDATE {} SET timestart={} WHERE id = 1".format(table_name, timestart))
+            except Exception as exc:
+                print(exc.args)
+    def get_timelimit(self,table_name=DEFAULT_TIMELIMIT_TABLE):
+        with self.connection:
+            try:
+                self.cursor.execute("SELECT * FROM {} WHERE id = 1".format(table_name))
+                value = self.cursor.fetchall()
+                return value
+            except Exception as exc:
+                print(exc.args)
+
+
+    def drop_timelimit(self,table_name=DEFAULT_TIMELIMIT_TABLE):
+        with self.connection:
+            try:
+                self.cursor.execute("DROP TABLE {}".format(table_name))
+            except Exception as exc:
+                print(exc.args)
+
+
+
 
 
 

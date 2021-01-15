@@ -20,6 +20,7 @@ initdb = SqliteDb()
 initdb.create_table()
 initdb.create_config_table()
 initdb.create_limittable()
+initdb.create_timetable()
 initdb.close()
 
 
@@ -64,6 +65,16 @@ def get_shiftmax(default_value=SHIFTMAX):
             return int(dt['vlimit'])
     else:
         return default_value
+def get_time():
+    connect = SqliteDb()
+    lim = connect.get_timelimit()
+    connect.close()
+    print(lim)
+    print(list(lim))
+    return lim
+
+
+
 
 
 
@@ -71,6 +82,7 @@ def get_shiftmax(default_value=SHIFTMAX):
 def create_inlinekeyboarb(message):
     SHIFTMAX = get_shiftmax()
     SHIFT_INTERVALS = get_shift_intervals()
+    lim = get_time()
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
 
@@ -136,14 +148,15 @@ def process_main(message):
         text = """Дамы и господа! Я обычный бот для записи.
         Мои основные команды:
           /start - вывести окно записи
-          /look - посмотреть всех записавшихся
+          /look - посмотреть всех записавшихся 
         Функционал доступный только администратору:
-          /push - удалить всех записавшихся и отобразить пустое окно записи
+          /push - удалить всех записавшихся, отобразить новое пустое окно записи
           /config - редактировать окно записи:
         Для отложенного запуска окна записи:
            -наберите команды и удерживайте кнопку _отправить_ > в мобильной версии
            или правой кнопкой мыши в десктопе
           /max - максимальное количество записей
+          /timelimit - установить время действие окна записи.По умолчанию 4 часа 
            
            @graphinfinit
            
@@ -169,6 +182,7 @@ def process_main(message):
             db = SqliteDb()
             db.drop_table()
             db.create_table()
+            db.update_timestart()
             db.close()
             bot.send_message(message.chat.id, text="<strong>.</strong>".format(
                 message.from_user.first_name), parse_mode='HTML')
@@ -198,7 +212,6 @@ def process_main(message):
             except:
                 bot.send_message(message.chat.id,
                 text="Ошибка. Придерживайтесь формата /config[пробел]Название интервала[пробел]Название интервала 2...")
-
         else:
             bot.send_message(message.chat.id, text="<strong>!{}, я слушаюсь только хозяина.</strong>".format(message.from_user.first_name), parse_mode='HTML')
 
@@ -221,6 +234,27 @@ def process_main(message):
             except Exception:
                 bot.send_message(message.chat.id,
                                  text="Ошибка!!")
+    elif message.text[:10] == '/timelimit':
+        if str(message.from_user.id) in ADMIN_LIST:
+            if message.text[11:].isdigit():
+                try:
+                    timelimit = message.text[11:]
+                    print(timelimit)
+                    db = SqliteDb()
+                    db.update_timelimit(timelimit=timelimit)
+                    db.close
+                    bot.send_message(message.chat.id,
+                                     text="Ограничение по времени успешно обновлено")
+                except Exception as exc:
+                    print(exc.args)
+            else:
+                bot.send_message(message.chat.id,
+                                 text="Неправильные данные. Введите число после команды")
+
+        else:
+            bot.send_message(message.chat.id, text="<strong>!{}, я слушаюсь только хозяина.</strong>", parse_mode='HTML')
+
+
 
     else:
         pass

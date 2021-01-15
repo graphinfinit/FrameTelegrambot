@@ -112,7 +112,6 @@ def create_inlinekeyboarb(message):
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
 
-
     for shift in SHIFT_INTERVALS:
         text = SHIFT_INTERVALS[shift]
         us = len(db.count_rows(shift=shift))
@@ -125,7 +124,7 @@ def create_inlinekeyboarb(message):
         inlinekeyboarb.row(itembtnlook, itembtn1)
     db.close()
     bot.send_message(message.chat.id,
-                     text="Запись на завтра открыта 🥁🥁 Выбираем время ➡.Успейте с {} по {}️".format(str(timestart), str(timeend)),
+                     text="Запись на завтра открыта 🥁🥁 Выбираем время ➡.Успейте с {} по {}️".format(str(limlist[0]),str(limlist[1])),
                      reply_markup=inlinekeyboarb)
 
 def delete_or_insert(call):

@@ -68,15 +68,11 @@ def get_shiftmax(default_value=SHIFTMAX):
         return default_value
 
 def get_time():
-
-    print('Hello!!!!!')
     connect = SqliteDb()
     lim = connect.get_timelimit()
     connect.close()
 
-
     f = dict(lim[0])
-    print(f)
     timestart = f['timestart']
     timelimit = f['timelimit']
     try:
@@ -85,11 +81,6 @@ def get_time():
         timeend = timestart + timedelta(minutes=int(timelimit))
     except Exception as exc:
         print(exc.args)
-
-    print(timestart)
-    print(timeend)
-
-
     return [timestart, timeend]
 
 
@@ -99,15 +90,9 @@ def get_time():
 
 
 def create_inlinekeyboarb(message):
-    print('hi')
     SHIFTMAX = get_shiftmax()
-    print('hi567')
     SHIFT_INTERVALS = get_shift_intervals()
-    print('hi2')
     limlist = get_time()
-    print(limlist[0])
-    print(limlist[1])
-
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
 
@@ -206,9 +191,8 @@ def process_main(message):
             db = SqliteDb()
             db.drop_table()
             db.create_table()
-            print('tyu')
             db.update_timestart(timestart=datetime.now())
-            print('tyu7778')
+
             db.close()
             bot.send_message(message.chat.id, text="<strong>.</strong>".format(
                 message.from_user.first_name), parse_mode='HTML')
@@ -265,7 +249,6 @@ def process_main(message):
             if message.text[11:].isdigit():
                 try:
                     timelimit = message.text[11:]
-                    print(timelimit)
                     db = SqliteDb()
                     db.update_timelimit(timelimit=timelimit)
                     db.close
@@ -291,7 +274,7 @@ def process_call(call):
     SHIFT_INTERVALS = get_shift_intervals()
     lim = get_time()
     timeend = lim[1]
-    timenow = datetime.now()
+    timenow = datetime.now() + timedelta(hours=3)
 
 
 

@@ -280,14 +280,7 @@ def process_call(call):
 
     for key_of_shift in SHIFT_INTERVALS:
         if call.data == key_of_shift:
-            print('xeeeeehjlhljlhjhjkhljhljkjhkhjk')
-            print(timenow)
-            print(type(timeend))
-            print(timeend)
-            print('hjkjhkj88888888888')
             if timeend > timenow:
-                print(timeend)
-                print(timenow)
                 delete_or_insert(call)
                 bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
                 create_inlinekeyboarb(call.message)

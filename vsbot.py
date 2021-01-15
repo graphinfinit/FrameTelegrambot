@@ -60,6 +60,7 @@ def get_shiftmax(default_value=SHIFTMAX):
         dt = dict(dt[0])
     except Exception as exc:
         print(exc.args)
+
     if dt:
         if dt['vlimit'].isdigit():
             return int(dt['vlimit'])
@@ -81,7 +82,7 @@ def get_time():
     print(timestart)
     try:
 
-        timestart = datetime.strptime(timestart, '%Y%m%d %H:%M:%S.%f')
+        timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f')+ timedelta(hours=3)
         timeend = timestart + timedelta(hours=int(timelimit))
     except Exception as exc:
         print(exc.args)
@@ -105,6 +106,8 @@ def create_inlinekeyboarb(message):
     SHIFT_INTERVALS = get_shift_intervals()
     print('hi2')
     limlist = get_time()
+    print(limlist[0])
+    print(limlist[1])
 
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)

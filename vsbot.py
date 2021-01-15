@@ -67,19 +67,24 @@ def get_shiftmax(default_value=SHIFTMAX):
         return default_value
 
 def get_time():
+
     print('Hello!!!!!')
     connect = SqliteDb()
     lim = connect.get_timelimit()
     connect.close()
 
+
     f = dict(lim[0])
-    print('f')
+    print(f)
     timestart = f['timestart']
     timelimit = f['timelimit']
     print(timestart)
+    try:
 
-    timestart = datetime.strptime(timestart, '%Y%m%d %H:%M:%S.%f')
-    timeend = timestart + timedelta(hours=int(timelimit))
+        timestart = datetime.strptime(timestart, '%Y%m%d %H:%M:%S.%f')
+        timeend = timestart + timedelta(hours=int(timelimit))
+    except Exception as exc:
+        print(exc.args)
 
     print(timestart)
     print(timeend)
@@ -96,6 +101,7 @@ def get_time():
 def create_inlinekeyboarb(message):
     print('hi')
     SHIFTMAX = get_shiftmax()
+    print('hi567')
     SHIFT_INTERVALS = get_shift_intervals()
     print('hi2')
     limlist = get_time()

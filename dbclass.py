@@ -6,12 +6,16 @@ from datetime import datetime
 
 DATABASE_URL = os.environ['DATABASE_URL']
 
+
+
 # db settings class SqliteDb
 DEFAULT_TABLE_NAME = 'shift_good'
 DEFAULT_CONFIG_TABLE = 'config'
 DEFAULT_STATE_TABLE = 'states'
 DEFAULT_LIMIT_TABLE = 'limittable'
 DEFAULT_TIMELIMIT_TABLE = 'timetable'
+
+TIME_LIMIT = 4
 
 class SqliteDb(object):
 

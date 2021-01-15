@@ -66,11 +66,16 @@ def get_shiftmax(default_value=SHIFTMAX):
     else:
         return default_value
 def get_time():
+    print('Hello!!!!!')
     connect = SqliteDb()
     lim = connect.get_timelimit()
     connect.close()
     print(lim)
-    print(list(lim))
+    f = dict(lim[0])
+    print(f)
+    print(f['timestart'])
+    print(f['timelimit'])
+
     return lim
 
 

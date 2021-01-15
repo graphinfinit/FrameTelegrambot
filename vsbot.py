@@ -109,8 +109,13 @@ def create_inlinekeyboarb(message):
     db.close()
 
     tend = str(limlist[1])
+    
+    text = """Запись на завтра открыта 🔔🔔🔔
+    Выберете, пожалуйста, время 🔻🔻
+    (Запись до  {}️ )""".format(tend[:19])
+
     bot.send_message(message.chat.id,
-                     text="Запись на завтра открыта 🔔🔔🔔 Выбираем время 🔻🔻 (Запись до  {}️ )".format(tend[:19]),
+                     text=text,
                      reply_markup=inlinekeyboarb)
 
 def delete_or_insert(call):

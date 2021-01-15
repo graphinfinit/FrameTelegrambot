@@ -1,6 +1,6 @@
 # settings abc  for vsbot.py
 
-TOKEN = "////"
+TOKEN = "1406371987:AAHr3qM_gZqYB-jKvQKmEvIZgaR-U9rsqe8"
 
 # начальное значение без базы
 SHIFT_INTERVALS = {'#1': '🌟 11:00',

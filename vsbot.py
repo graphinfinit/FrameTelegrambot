@@ -79,7 +79,6 @@ def get_time():
     print(f)
     timestart = f['timestart']
     timelimit = f['timelimit']
-    print(timestart)
     try:
 
         timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f') + timedelta(hours=3)
@@ -298,6 +297,11 @@ def process_call(call):
 
     for key_of_shift in SHIFT_INTERVALS:
         if call.data == key_of_shift:
+            print('xeeeeehjlhljlhjhjkhljhljkjhkhjk')
+            print(timenow)
+            print(type(timeend))
+            print(timeend)
+            print('hjkjhkj88888888888')
             if timeend > timenow:
                 print(timeend)
                 print(timenow)

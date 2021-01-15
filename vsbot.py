@@ -6,7 +6,7 @@ import telebot
 from telebot import types
 
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 from settings import *
@@ -70,13 +70,18 @@ def get_time():
     connect = SqliteDb()
     lim = connect.get_timelimit()
     connect.close()
-    print(lim)
     f = dict(lim[0])
-    print(f)
-    print(f['timestart'])
-    print(f['timelimit'])
+    timestart = f['timestart']
+    timelimit = f['timelimit']
 
-    return lim
+    timestart = datetime.strptime(timelimit, '%Y%m%d %H:%M:%S.%f')
+    timeend = timestart + timedelta(hours=int(timelimit))
+
+    print(timestart)
+    print(timeend)
+
+
+    return [timestart, timeend]
 
 
 
@@ -87,7 +92,8 @@ def get_time():
 def create_inlinekeyboarb(message):
     SHIFTMAX = get_shiftmax()
     SHIFT_INTERVALS = get_shift_intervals()
-    lim = get_time()
+    limlist = get_time()
+
     db = SqliteDb()
     inlinekeyboarb = types.InlineKeyboardMarkup(row_width=2)
 

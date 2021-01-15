@@ -74,7 +74,7 @@ def get_time():
     timestart = f['timestart']
     timelimit = f['timelimit']
 
-    timestart = datetime.strptime(timelimit, '%Y%m%d %H:%M:%S.%f')
+    timestart = datetime.strptime(timestart, '%Y%m%d %H:%M:%S.%f')
     timeend = timestart + timedelta(hours=int(timelimit))
 
     print(timestart)

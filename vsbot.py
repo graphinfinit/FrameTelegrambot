@@ -82,7 +82,7 @@ def get_time():
     print(timestart)
     try:
 
-        timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f')+ timedelta(hours=3)
+        timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f') + timedelta(hours=3)
         timeend = timestart + timedelta(hours=int(timelimit))
     except Exception as exc:
         print(exc.args)
@@ -125,7 +125,7 @@ def create_inlinekeyboarb(message):
         inlinekeyboarb.row(itembtnlook, itembtn1)
     db.close()
     bot.send_message(message.chat.id,
-                     text="""Запись на завтра открыта 🥁🥁 Выбираем время ➡️""",
+                     text="""Запись на завтра открыта 🥁🥁 Выбираем время ➡.Успейте с {} по {}️""".format(str(timestart), str(timeend)),
                      reply_markup=inlinekeyboarb)
 
 def delete_or_insert(call):

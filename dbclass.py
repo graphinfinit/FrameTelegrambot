@@ -96,8 +96,8 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, timestart TEXT, timelimit INTEGER)".format(table_name))
-                self.cursor.execute( "INSERT INTO {} (timestart, timelimit) VALUES ({},{})".format(table_name, str(timestart), timelimit))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, timestart TEXT, timelimit TEXT)".format(table_name))
+                self.cursor.execute("INSERT INTO {} (timestart, timelimit) VALUES ('{}','{}')".format(table_name, str(timestart), str(timelimit)))
             except Exception as exc:
                 print(exc.args)
     def update_timelimit(self, table_name=DEFAULT_TIMELIMIT_TABLE, timelimit = TIME_LIMIT):
@@ -109,7 +109,7 @@ class SqliteDb(object):
     def update_timestart(self, table_name=DEFAULT_TIMELIMIT_TABLE, timestart = datetime.now()):
         with self.connection:
             try:
-                self.cursor.execute("UPDATE {} SET timestart={} WHERE id = 1".format(table_name, str(timestart)))
+                self.cursor.execute("UPDATE {} SET timestart='{}' WHERE id = 1".format(table_name, str(timestart)))
             except Exception as exc:
                 print(exc.args)
     def get_timelimit(self,table_name=DEFAULT_TIMELIMIT_TABLE):

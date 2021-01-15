@@ -207,7 +207,9 @@ def process_main(message):
             db = SqliteDb()
             db.drop_table()
             db.create_table()
-            db.update_timestart()
+            print('tyu')
+            db.update_timestart(timestart=datetime.now())
+            print('tyu7778')
             db.close()
             bot.send_message(message.chat.id, text="<strong>.</strong>".format(
                 message.from_user.first_name), parse_mode='HTML')

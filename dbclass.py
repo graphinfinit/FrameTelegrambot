@@ -109,7 +109,8 @@ class SqliteDb(object):
     def update_timestart(self, table_name=DEFAULT_TIMELIMIT_TABLE, timestart = datetime.now()):
         with self.connection:
             try:
-                self.cursor.execute("UPDATE {} SET timestart='{}' WHERE id = 1".format(table_name, str(timestart)))
+                self.cursor.execute("UPDATE {} SET timestart ='{}' WHERE id = 1".format(table_name, str(timestart)))
+                print('Привет я проабдейтериитий!')
             except Exception as exc:
                 print(exc.args)
     def get_timelimit(self,table_name=DEFAULT_TIMELIMIT_TABLE):

@@ -112,7 +112,7 @@ def create_inlinekeyboarb(message):
 
     text = """Запись на завтра открыта 🔔🔔🔔
 Выберите,пожалуйста,время 🔻🔻
-(Запись до  {}️ )""".format(tend[11:16])
+(Запись до {}️)""".format(tend[11:16])
 
     bot.send_message(message.chat.id,
                      text=text,
@@ -158,14 +158,14 @@ def delete_or_insert(call):
 def process_main(message):
     SHIFT_INTERVALS = get_shift_intervals()
     if message.text == '/start':
-        create_inlinekeyboarb(message)
+        if str(message.from_user.id) in ADMIN_LIST:
+            create_inlinekeyboarb(message)
 
     elif message.text == '/help':
         text = """Дамы и господа! Я обычный бот для записи.
         Мои основные команды:
           /start - вывести окно записи
           /look - посмотреть всех записавшихся 
-        Функционал доступный только администратору:
           /push - удалить всех записавшихся, отобразить новое пустое окно записи, обнулить время начала записи.
           /config - редактировать окно записи(после config перечислите названия смен через пробел):
         Для отложенного запуска окна записи:
@@ -182,16 +182,17 @@ def process_main(message):
         text=text)
 
     elif message.text == '/look':
-        db = SqliteDb()
-        for shift in SHIFT_INTERVALS:
-            count_rows = db.count_rows(shift=shift)
-            bot.send_message(message.chat.id,
-                             text='Записались на {} - {} человек.'.format(SHIFT_INTERVALS[shift], len(count_rows)))
-            for row in count_rows:
-                row = dict(row)
-                text ="<a href='tg://user?id={}'>{}</a>".format(row['user_id'], row['user_name'])
-                bot.send_message(message.chat.id, text=text, parse_mode='HTML')
-        db.close()
+        if str(message.from_user.id) in ADMIN_LIST:
+            db = SqliteDb()
+            for shift in SHIFT_INTERVALS:
+                count_rows = db.count_rows(shift=shift)
+                bot.send_message(message.chat.id,
+                                 text='Записались на {} - {} человек.'.format(SHIFT_INTERVALS[shift], len(count_rows)))
+                for row in count_rows:
+                    row = dict(row)
+                    text ="<a href='tg://user?id={}'>{}</a>".format(row['user_id'], row['user_name'])
+                    bot.send_message(message.chat.id, text=text, parse_mode='HTML')
+            db.close()
 
     elif message.text == '/push':
         if str(message.from_user.id) in ADMIN_LIST:
@@ -244,7 +245,7 @@ def process_main(message):
                         db.set_max(data)
                         db.close()
                         bot.send_message(message.chat.id,
-                                         text="Наверное получилось...")
+                                         text="Ограничение исполнено.")
                 else:
                     bot.send_message(message.chat.id,
                                      text="Ошибка входных данных.")

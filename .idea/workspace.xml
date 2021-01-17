@@ -20,6 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f48815da-5364-4072-8d04-57a3f65c6ef7" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vsbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/vsbot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

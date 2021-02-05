@@ -1,10 +1,9 @@
 
 import os
-import psycopg2
-import psycopg2.extras
+import sqlite3
 from datetime import datetime
 
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = "vsbot.db"
 
 
 
@@ -22,9 +21,9 @@ TIME_LIMIT = 240
 class SqliteDb(object):
 
     def __init__(self, db_path=DATABASE_URL):
-        self.connection = psycopg2.connect(db_path)
-        self.cursor = self.connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
+        self.connection = sqlite3.connect(db_path)
+        self.connection.row_factory = sqlite3.Row
+        self.cursor = self.connection.cursor()
     # adminpart
     def create_config_table(self, table_name=DEFAULT_CONFIG_TABLE):
         """
@@ -33,7 +32,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, shift TEXT)".format(table_name))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, shift TEXT)".format(table_name))
                 return True
             except Exception as exc:
                 print(exc.args)
@@ -98,7 +97,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY, timestart TEXT, timelimit TEXT)".format(table_name))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, timestart TEXT, timelimit TEXT)".format(table_name))
                 self.cursor.execute("INSERT INTO {} (timestart, timelimit) VALUES ('{}','{}')".format(table_name, str(timestart), str(timelimit)))
             except Exception as exc:
                 print(exc.args)
@@ -169,7 +168,7 @@ class SqliteDb(object):
         """
         with self.connection:
             try:
-                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id SERIAL PRIMARY KEY , date TEXT, shift TEXT, user_id TEXT, user_name TEXT)'.format(table_name))
+                self.cursor.execute('CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, shift TEXT, user_id TEXT, user_name TEXT)'.format(table_name))
                 return True
             except Exception as exc:
                 print(exc.args)

@@ -1,3 +1,4 @@
 
 pyTelegramBotAPI==3.7.1
-psycopg2
+# psycopg2 для postgres
+# sqlite3

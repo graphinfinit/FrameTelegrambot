@@ -4,11 +4,9 @@
 """
 import telebot
 from telebot import types
-
 import time
 from datetime import datetime, timedelta
 import re
-
 from settings import *
 from dbclass import *
 
@@ -22,11 +20,7 @@ initdb.create_config_table()
 initdb.create_limittable()
 initdb.create_timetable()
 initdb.close()
-
-
 print('Ok...')
-
-
 
 def is_allowed(string):
     characherRegex = re.compile(r'[^a-zA-Z0-9.:\s]')
@@ -77,7 +71,7 @@ def get_time():
     timelimit = f['timelimit']
     try:
 
-        timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f') + timedelta(hours=3)
+        timestart = datetime.strptime(timestart, '%Y-%m-%d %H:%M:%S.%f')
         timeend = timestart + timedelta(minutes=int(timelimit))
     except Exception as exc:
         print(exc.args)
@@ -282,7 +276,7 @@ def process_call(call):
     SHIFT_INTERVALS = get_shift_intervals()
     lim = get_time()
     timeend = lim[1]
-    timenow = datetime.now() + timedelta(hours=3)
+    timenow = datetime.now()
 
 
 
